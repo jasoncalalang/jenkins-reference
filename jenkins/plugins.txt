@@ -1,0 +1,12 @@
+configuration-as-code
+job-dsl
+workflow-aggregator
+pipeline-stage-view
+git
+gradle
+junit
+warnings-ng
+docker-workflow
+htmlpublisher
+timestamper
+ws-cleanup

@@ -1,0 +1,54 @@
+services:
+  jenkins:
+    build: ./jenkins
+    container_name: jenkins
+    ports:
+      - "8080:8080"
+      - "50000:50000"
+    volumes:
+      - jenkins_home:/var/jenkins_home
+    networks:
+      - jenkins-net
+    restart: unless-stopped
+
+  jenkins-agent:
+    build: ./jenkins-agent
+    container_name: jenkins-agent
+    # Run as root so the agent can use the mounted Docker socket regardless of
+    # which group owns it on the host (host group IDs vary between Docker
+    # Desktop, Rancher Desktop, Linux, etc.). For a learning environment this
+    # is an acceptable simplification; a production setup would either pin
+    # group_add to a known docker-group GID or use a rootless docker-in-docker
+    # sidecar instead of mounting the host socket.
+    user: root
+    environment:
+      - JENKINS_URL=http://jenkins:8080
+      - JENKINS_USER=admin
+      - JENKINS_PASS=admin
+      - JENKINS_AGENT_NAME=docker-agent
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      - jenkins
+    networks:
+      - jenkins-net
+    restart: unless-stopped
+
+  registry:
+    image: registry:2
+    container_name: registry
+    ports:
+      - "5000:5000"
+    volumes:
+      - registry_data:/var/lib/registry
+    networks:
+      - jenkins-net
+    restart: unless-stopped
+
+networks:
+  jenkins-net:
+    name: jenkins-net
+
+volumes:
+  jenkins_home:
+  registry_data:

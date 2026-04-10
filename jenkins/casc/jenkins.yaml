@@ -1,0 +1,32 @@
+jenkins:
+  systemMessage: "Jenkins Learning Environment - Address Book CI/CD Pipeline"
+
+  securityRealm:
+    local:
+      allowsSignup: false
+      users:
+        - id: "admin"
+          password: "admin"
+
+  authorizationStrategy: loggedInUsersCanDoAnything
+
+  slaveAgentPort: 50000
+
+  nodes:
+    - permanent:
+        name: "docker-agent"
+        remoteFS: "/home/jenkins/agent"
+        numExecutors: 2
+        mode: NORMAL
+        labelString: "docker-agent"
+        launcher:
+          jnlp:
+            workDirSettings:
+              disabled: false
+
+unclassified:
+  location:
+    url: "http://localhost:8080/"
+
+jobs:
+  - file: /var/jenkins_home/jobs-dsl/seed.groovy
